@@ -3,18 +3,14 @@
 
 // START SCREEN
 function drawStartScreen() {
+  // Scrolling Background
   if (forestMap2) {
     imageMode(CORNER);
-
-    // Draw two images side by side
     image(forestMap2, scroll, 0, width, height);
-    image(forestMap2, scroll - width, 0, width, height);
+    image(forestMap2, scroll + width, 0, width, height);
+    scroll -= scrollSpeed;
 
-    // Move to the right
-    scroll += scrollSpeed;
-
-    // Reset position when the first image fully moves off screen
-    if (scroll >= width) {
+    if (scroll <= -width) {
       scroll = 0;
     }
   }
@@ -34,20 +30,21 @@ function drawStartScreen() {
   translate(width / 2, height / 2 + 60);
   rotate(radians(diceAngle));
   imageMode(CENTER);
-
-  // Cycle through dice faces every few frames
   image(diceFaces[diceAnimFrame], 0, 0, 100, 100);
-
   pop();
 
   diceAngle += 2;
+
+  // switch face of dice
   diceTimer++;
-  if (diceTimer % 15 === 0) { // switch face every few frames
+  if (diceTimer % 15 === 0) { 
     diceAnimFrame++;
-    if (diceAnimFrame > 6) diceAnimFrame = 1;
+    if (diceAnimFrame > 6) {
+      diceAnimFrame = 1;
+    }
   }
 
-  // Animated text hint
+  // Animated Start instruction
   fill(180, 220, 255);
   textSize(24);
   if (frameCount % 120 < 60) {
@@ -59,6 +56,7 @@ function drawStartScreen() {
 function drawMenuScreen() {
   background(25, 25, 60);
 
+  // Animations of attacking characters
   attackTimer++;
   if (attackTimer >= 60) {
     warriorAttacking = !warriorAttacking;
@@ -66,6 +64,7 @@ function drawMenuScreen() {
     attackTimer = 0;
   }
 
+  // Instructions of game
   fill(255);
   textSize(36);
   text("How to Play", width / 2, 80);
@@ -82,18 +81,16 @@ function drawMenuScreen() {
     height / 2 - 80
   );
 
-  // === Draw Button ===
+  // Button to see Combinations
   let btnX = width / 2;
   let btnY = height / 2 + 20;
   let btnW = 280;
   let btnH = 50;
 
-  // Button background
   fill(50, 100, 200);
   rectMode(CENTER);
   rect(btnX, btnY, btnW, btnH, 10);
 
-  // Button text
   fill(255);
   textSize(22);
   text("Combination Rules", btnX, btnY);
@@ -126,16 +123,18 @@ function drawMenuScreen() {
     image(enemyDice[enemyFaces[1]], monsterX + offsetX, monsterY + offsetY, 80, 80);
   }
 
-  // Start Battle
+  // Start battle button
   fill(180, 220, 255);
   textSize(24);
   if (frameCount % 100 < 50) {
     text("Click to Begin Battle", (width / 2), (height / 2) + 120);
   }
 
+  // Draw Characters
   drawWarrior();
   drawMonster1();
 
+  // Image of Combinations
   if (showRules && comboRulesImg) {
     push();
     imageMode(CENTER);
@@ -152,6 +151,7 @@ function drawGame() {
   text("Wiat For Next CheckPoint To See GamePlay", width / 2, height / 2);
 }
 
+// Function to draw warrior character
 function drawWarrior() {
   // Draw Warrior
   push();
@@ -164,6 +164,7 @@ function drawWarrior() {
   pop();
 }
 
+// Function to draw monster character
 function drawMonster1() {
   // Draw Monster
   push();
@@ -176,6 +177,7 @@ function drawMonster1() {
   pop();
 }
 
+// Function to check if mouse is clicked correctly
 function mousePressed() {
   if (mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
     if (gameState === "start") {
@@ -215,10 +217,8 @@ function mousePressed() {
   }
 }
 
-// Game state controller
+// Global variables
 let gameState = "start";
-
-// Images
 let warriorImg, monsterImg, hitImg, warriorAttack, monsterAttack;
 let diceFaces = [];
 let diceAngle = 0;
@@ -237,6 +237,7 @@ let forestMap2;
 let scroll = 0;
 let scrollSpeed = 1
 
+// Images
 function preload() {
   warriorImg = loadImage("assets/Warrior 1 - Axe - Idle_088.png");
   monsterImg = loadImage("assets/Bringer-of-Death_Attack_10.png", img => img.resize(300, 0));
@@ -250,7 +251,6 @@ function preload() {
   for (let i = 1; i <= 6; i++) {
     diceFaces[i] = loadImage(`assets/d6_white_${i}.png`);
   }
-
   for (let j = 1; j <= 6; j++) {
     enemyDice[j] = loadImage(`assets/d6_red_${j}.png`);
   }
@@ -263,13 +263,13 @@ function setup() {
 }
 
 function draw() {
-  background(20);
+  background(0);
 
   if (gameState === "start") {
     drawStartScreen();
   } else if (gameState === "menu") {
     drawMenuScreen();
   } else if (gameState === "play") {
-    drawGame(); // Future gameplay
+    drawGame(); 
   }
 }
