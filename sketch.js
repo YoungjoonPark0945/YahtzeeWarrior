@@ -103,28 +103,16 @@ function drawGame() {
 // CHARACTER DRAWING (Placeholder Shapes)
 // =======================================================
 function drawCharacters() {
-  // Gentle floating animation for both characters
-  let floatOffset = sin(frameCount * 0.05) * 10; // smooth up–down motion
-
   imageMode(CENTER);
 
-  // Draw Warrior (left side)
+  // Draw Warrior
   if (warriorImg) {
-    image(warriorImg, width / 2 - 180, height / 2 + 100 + floatOffset, 200, 200);
-  } else {
-    // fallback shape if image not loaded
-    fill(100, 150, 255);
-    ellipse(width / 2 - 180, height / 2 + 100 + floatOffset, 80, 80);
-  }
+    image(warriorImg, width / 2 - 180, height / 2 + 100, 100, 100);
+  } 
 
-  // Draw Monster (right side)
+  // Draw Monster
   if (monsterImg) {
-    image(monsterImg, width / 2 + 180, height / 2 + 100 - floatOffset, 200, 200);
-  } else {
-    // fallback shape if image not loaded
-    fill(255, 100, 100);
-    rectMode(CENTER);
-    rect(width / 2 + 180, height / 2 + 100 - floatOffset, 80, 80);
+    image(monsterImg, width / 2 + 180, height / 2 + 100, 200, 200);
   }
 }
 
@@ -152,10 +140,10 @@ let diceTimer = 0;
 
 function preload() {
   warriorImg = loadImage("assets/Warrior 1 - Axe - Idle_088.png");
-  monsterImg = loadImage("assets/Bringer-of-Death_Attack_5.png");
+  monsterImg = loadImage("assets/Bringer-of-Death_Attack_10.png");
   hitImg = loadImage("assets/hit.png");
   warriorAttack = loadImage("assets/Warrior 1 - Axe - Attack 1_039.png");
-  monsterAttack = loadImage("assets/Bringer-of-Death_Attack_10.png");
+  monsterAttack = loadImage("assets/Bringer-of-Death_Attack_5.png");
 
   for (let i = 1; i <= 6; i++) {
     diceFaces[i] = loadImage(`assets/d6_white_${i}.png`);
