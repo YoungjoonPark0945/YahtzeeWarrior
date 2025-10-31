@@ -67,7 +67,7 @@ function drawMenuScreen() {
     height / 2 - 30
   );
 
-  // Simple animation (floating dice)
+
   push();
   translate(width / 2, height / 2 + 120);
   rotate(radians(diceAngle));
@@ -97,18 +97,21 @@ function drawGame() {
   text("Gameplay Coming Soon...", width / 2, height / 2);
 }
 
-// Drawings of Characters 
 function drawCharacters() {
-  imageMode(CENTER);
-
   // Draw Warrior
   if (warriorImg) {
-    image(warriorImg, (width / 2) - 200, (height / 2) + 200);
-  } 
+    push();
+    imageMode(CORNER); // use top-left as anchor
+    image(warriorImg, (width / 2) - 300, (height / 2) - 100);
+    pop();
+  }
 
-  // Draw Monsters
+  // Draw Monster
   if (monsterImg) {
-    image(monsterImg, width / 2, height / 2);
+    push();
+    imageMode(CORNER);
+    image(monsterImg, (width / 2) + 100, (height / 2) - 100);
+    pop();
   }
 }
 
@@ -147,6 +150,7 @@ function setup() {
   createCanvas(800, 600);
   textAlign(CENTER, CENTER);
   textFont("Times New Roman");
+  monsterImg.resize(200, 0);
 }
 
 function draw() {
