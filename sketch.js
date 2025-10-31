@@ -103,15 +103,31 @@ function drawGame() {
 // CHARACTER DRAWING (Placeholder Shapes)
 // =======================================================
 function drawCharacters() {
-  // Player - blue circle
-  fill(100, 150, 255);
-  ellipse(width / 2 - 150, height / 2 + 100, 80, 80);
+  // Gentle floating animation for both characters
+  let floatOffset = sin(frameCount * 0.05) * 10; // smooth up–down motion
 
-  // Monster - red square
-  fill(255, 100, 100);
-  rectMode(CENTER);
-  rect(width / 2 + 150, height / 2 + 100, 80, 80);
+  imageMode(CENTER);
+
+  // Draw Warrior (left side)
+  if (warriorImg) {
+    image(warriorImg, width / 2 - 180, height / 2 + 100 + floatOffset, 200, 200);
+  } else {
+    // fallback shape if image not loaded
+    fill(100, 150, 255);
+    ellipse(width / 2 - 180, height / 2 + 100 + floatOffset, 80, 80);
+  }
+
+  // Draw Monster (right side)
+  if (monsterImg) {
+    image(monsterImg, width / 2 + 180, height / 2 + 100 - floatOffset, 200, 200);
+  } else {
+    // fallback shape if image not loaded
+    fill(255, 100, 100);
+    rectMode(CENTER);
+    rect(width / 2 + 180, height / 2 + 100 - floatOffset, 80, 80);
+  }
 }
+
 
 // =======================================================
 // USER INPUT
