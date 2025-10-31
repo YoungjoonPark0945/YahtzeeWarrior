@@ -102,7 +102,7 @@ function drawCharacters() {
   if (warriorImg) {
     push();
     imageMode(CORNER); // use top-left as anchor
-    image(warriorImg, (width / 2) - 300, (height / 2) - 100);
+    image(warriorImg, (width / 2) - 100, (height / 2) - 400);
     pop();
   }
 
@@ -110,7 +110,7 @@ function drawCharacters() {
   if (monsterImg) {
     push();
     imageMode(CORNER);
-    image(monsterImg, (width / 2) + 100, (height / 2) - 100);
+    image(monsterImg, (width / 2) + 100, (height / 2) - 350);
     pop();
   }
 }
@@ -150,7 +150,7 @@ function setup() {
   createCanvas(800, 600);
   textAlign(CENTER, CENTER);
   textFont("Times New Roman");
-  monsterImg.resize(200, 0);
+  monsterImg.resize(400, 0);
 }
 
 function draw() {
