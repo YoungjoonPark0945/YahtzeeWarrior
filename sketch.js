@@ -46,9 +46,7 @@ function drawStartScreen() {
   drawCharacters();
 }
 
-// =======================================================
 // INSTRUCTION / MENU SCREEN
-// =======================================================
 function drawMenuScreen() {
   background(25, 25, 60);
 
@@ -103,14 +101,15 @@ function drawCharacters() {
     push();
     imageMode(CENTER);
     image(warriorImg, (width / 2) - 100, (height / 2) - 400);
-    pop(CENTER);
+    pop();
   }
 
   // Draw Monster
   if (monsterImg) {
     push();
+    monsterImg.resize(800, 0);
     imageMode(CENTER);
-    image(monsterImg, (width / 2) + 100, (height / 2) - 350);
+    image(monsterImg, (width / 2) + 1000, (height / 2) - 1000);
     pop();
   }
 }
@@ -150,7 +149,6 @@ function setup() {
   createCanvas(800, 600);
   textAlign(CENTER, CENTER);
   textFont("Times New Roman");
-  monsterImg.resize(800, 0);
 }
 
 function draw() {
