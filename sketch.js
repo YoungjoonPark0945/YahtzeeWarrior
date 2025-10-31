@@ -107,12 +107,12 @@ function drawCharacters() {
 
   // Draw Warrior
   if (warriorImg) {
-    image(warriorImg, width / 2 - 180, height / 2 + 100, 100, 100);
+    image(warriorImg, width / 2 - 180, height / 2 + 150, 50, 70);
   } 
 
   // Draw Monster
   if (monsterImg) {
-    image(monsterImg, width / 2 + 180, height / 2 + 100, 200, 200);
+    image(monsterImg, width / 2 + 100, height / 2 + 100, 200, 240);
   }
 }
 
