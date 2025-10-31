@@ -100,7 +100,7 @@ function drawCharacters() {
   if (warriorImg) {
     push();
     imageMode(CENTER);
-    image(warriorImg, (width / 2), (height / 2));
+    image(warriorImg, 400, 400);
     pop();
   }
 
@@ -108,7 +108,7 @@ function drawCharacters() {
   if (monsterImg) {
     push();
     imageMode(CENTER);
-    image(monsterImg, (width / 2), (height / 2));
+    image(monsterImg, 400, 400);
     pop();
   }
 }
@@ -135,6 +135,7 @@ let diceTimer = 0;
 function preload() {
   warriorImg = loadImage("assets/Warrior 1 - Axe - Idle_088.png");
   monsterImg = loadImage("assets/Bringer-of-Death_Attack_10.png");
+  monsterImg.resize(300, 0);
   hitImg = loadImage("assets/hit.png");
   warriorAttack = loadImage("assets/Warrior 1 - Axe - Attack 1_039.png");
   monsterAttack = loadImage("assets/Bringer-of-Death_Attack_5.png");
@@ -148,9 +149,6 @@ function setup() {
   createCanvas(800, 600);
   textAlign(CENTER, CENTER);
   textFont("Times New Roman");
-  if (monsterImg) {
-    monsterImg.resize(300, 0);
-  }
 }
 
 function draw() {
