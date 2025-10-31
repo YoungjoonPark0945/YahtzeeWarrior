@@ -1,25 +1,37 @@
 // Yahtzee Warrior - Checkpoint 1
 // Creator: Youngjoon Park
-// Description: Title screen + instruction screen with animations
 
 // START SCREEN
-
 function drawStartScreen() {
-  background(10, 10, 30);
+  if (forestMap2) {
+    imageMode(CORNER);
+
+    // Draw two images side by side
+    image(forestMap2, scroll, 0, width, height);
+    image(forestMap2, scroll - width, 0, width, height);
+
+    // Move to the right
+    scroll += scrollSpeed;
+
+    // Reset position when the first image fully moves off screen
+    if (scroll >= width) {
+      scroll = 0;
+    }
+  }
 
   // Title
   fill(255);
   textSize(48);
   text("YAHTZEE WARRIOR", width / 2, height / 2 - 120);
 
-  // Creator name
+  // My name
   textSize(20);
   fill(200);
   text("Created by Youngjoon Park", width / 2, height / 2 - 70);
 
-  // --- Dice rolling animation ---
+  // Dice animation
   push();
-  translate(width / 2, height / 2 + 30);
+  translate(width / 2, height / 2 + 60);
   rotate(radians(diceAngle));
   imageMode(CENTER);
 
@@ -30,7 +42,7 @@ function drawStartScreen() {
 
   diceAngle += 2;
   diceTimer++;
-  if (diceTimer % 6 === 0) { // switch face every few frames
+  if (diceTimer % 15 === 0) { // switch face every few frames
     diceAnimFrame++;
     if (diceAnimFrame > 6) diceAnimFrame = 1;
   }
@@ -41,14 +53,18 @@ function drawStartScreen() {
   if (frameCount % 120 < 60) {
     text("Click to Start", width / 2, height - 100);
   }
-
-  // Player & Monster silhouettes (for now)
-  drawCharacters();
 }
 
-// INSTRUCTION / MENU SCREEN
+// MENU SCREEN
 function drawMenuScreen() {
   background(25, 25, 60);
+
+  attackTimer++;
+  if (attackTimer >= 60) {
+    warriorAttacking = !warriorAttacking;
+    monsterAttacking = !monsterAttacking;
+    attackTimer = 0;
+  }
 
   fill(255);
   textSize(36);
@@ -60,31 +76,72 @@ function drawMenuScreen() {
     "Roll 5 dices each turn to attack the monster.\n" +
     "You can lock each dice and reroll up to 3 times.\n" +
     "Different Yahtzee combinations deal different damage.\n" +
-    "Defeat the monster before your dices are all disabled!",
+    "Defeat the monster before your dices are all disabled!\n" +
+    "Click the Button to see the combinations",
     width / 2,
-    height / 2 - 30
+    height / 2 - 80
   );
 
+  // === Draw Button ===
+  let btnX = width / 2;
+  let btnY = height / 2 + 20;
+  let btnW = 280;
+  let btnH = 50;
 
-  push();
-  translate(width / 2, height / 2 + 120);
-  rotate(radians(diceAngle));
-  fill(255, 220, 100);
+  // Button background
+  fill(50, 100, 200);
   rectMode(CENTER);
-  rect(0, 0, 60, 60, 10);
-  fill(0);
-  ellipse(0, 0, 10, 10);
-  pop();
-  diceAngle += 1.5;
+  rect(btnX, btnY, btnW, btnH, 10);
 
-  // Hint to start
+  // Button text
+  fill(255);
+  textSize(22);
+  text("Combination Rules", btnX, btnY);
+
+  // Dice animation 
+  faceTimer++;
+  if (faceTimer % 30 === 0) {
+    for (let i = 0; i < 5; i++) playerFaces[i] = floor(random(1, 7));
+    for (let i = 0; i < 2; i++) enemyFaces[i] = floor(random(1, 7));
+  }
+
+  // Player's 5 dices
+  let diceY = height - 90;
+  let diceXStart = (width / 2) - 340;
+  let diceSpacing = 80;
+
+  imageMode(CENTER);
+  for (let i = 0; i < 5; i++) {
+    image(diceFaces[playerFaces[i]], diceXStart + i * diceSpacing, diceY, 60, 60);
+  }
+
+  // Enemy dices
+  if (monsterImg) {
+    let monsterX = (width / 2) + 250;
+    let monsterY = (height / 2) + 40;
+    let offsetY = 160;
+    let offsetX = 50;
+
+    image(enemyDice[enemyFaces[0]], monsterX - offsetX, monsterY + offsetY, 80, 80);
+    image(enemyDice[enemyFaces[1]], monsterX + offsetX, monsterY + offsetY, 80, 80);
+  }
+
+  // Start Battle
   fill(180, 220, 255);
   textSize(24);
   if (frameCount % 100 < 50) {
-    text("Click to Begin Battle", width / 2, height - 80);
+    text("Click to Begin Battle", (width / 2), (height / 2) + 120);
   }
 
-  drawCharacters();
+  drawWarrior();
+  drawMonster1();
+
+  if (showRules && comboRulesImg) {
+    push();
+    imageMode(CENTER);
+    image(comboRulesImg, width / 2, height / 2, 500, 500);
+    pop();
+  }
 }
 
 // Actual Game Play
@@ -92,33 +149,69 @@ function drawGame() {
   background(40);
   fill(255);
   textSize(32);
-  text("Gameplay Coming Soon...", width / 2, height / 2);
+  text("Wiat For Next CheckPoint To See GamePlay", width / 2, height / 2);
 }
 
-function drawCharacters() {
+function drawWarrior() {
   // Draw Warrior
-  if (warriorImg) {
-    push();
-    imageMode(CENTER);
-    image(warriorImg, 400, 400);
-    pop();
+  push();
+  imageMode(CENTER);
+  if (warriorAttacking && warriorAttack) {
+    image(warriorAttack, (width / 2) - 200, (height / 2) + 100);
+  } else if (warriorImg) {
+    image(warriorImg, (width / 2) - 200, (height / 2) + 100);
   }
-
-  // Draw Monster
-  if (monsterImg) {
-    push();
-    imageMode(CENTER);
-    image(monsterImg, 400, 200);
-    pop();
-  }
+  pop();
 }
 
-// Input
+function drawMonster1() {
+  // Draw Monster
+  push();
+  imageMode(CENTER);
+  if (monsterAttacking && monsterAttack) {
+    image(monsterAttack, (width / 2) + 180, (height / 2) + 40);
+  } else if (monsterImg) {
+    image(monsterImg, (width / 2) + 180, (height / 2) + 40);
+  }
+  pop();
+}
+
 function mousePressed() {
-  if (gameState === "start") {
-    gameState = "menu";
-  } else if (gameState === "menu") {
-    gameState = "play";
+  if (mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
+    if (gameState === "start") {
+      gameState = "menu";
+    } else if (gameState === "menu") {
+      // Check if user clicked inside button
+      if (
+        mouseX > ((width / 2) - 140) &&
+        mouseX < ((width / 2) + 140) &&
+        mouseY > (height / 2 + 20 - 25) &&
+        mouseY < (height / 2 + 20 + 25)
+      ) {
+        showRules = !showRules;
+        return;
+      }
+      if (showRules) {
+        if (
+          mouseX > (width / 2 - 250) &&
+          mouseX < (width / 2 + 250) &&
+          mouseY > (height / 2 - 250) &&
+          mouseY < (height / 2 + 250)
+        ) {
+          showRules = false;
+          return;
+        }
+      }
+      if (
+        mouseX > ((width / 2) - 140) &&
+        mouseX < ((width / 2) + 140) &&
+        mouseY > (height / 2 + 120 - 25) &&
+        mouseY < (height / 2 + 120 + 25)
+      ) {
+        gameState = "play";
+        return;
+      }
+    }
   }
 }
 
@@ -131,16 +224,35 @@ let diceFaces = [];
 let diceAngle = 0;
 let diceAnimFrame = 1;
 let diceTimer = 0;
+let enemyDice = [];
+let playerFaces = [1, 2, 3, 4, 5];
+let enemyFaces = [1, 1];
+let faceTimer = 0;
+let comboRulesImg;
+let showRules = false;
+let attackTimer = 0;
+let warriorAttacking = false;
+let monsterAttacking = false;
+let forestMap2;
+let scroll = 0;
+let scrollSpeed = 1
 
 function preload() {
   warriorImg = loadImage("assets/Warrior 1 - Axe - Idle_088.png");
-  monsterImg = loadImage("assets/Bringer-of-Death_Attack_10.png", img => img.resize(400, 0));
+  monsterImg = loadImage("assets/Bringer-of-Death_Attack_10.png", img => img.resize(300, 0));
   hitImg = loadImage("assets/hit.png");
   warriorAttack = loadImage("assets/Warrior 1 - Axe - Attack 1_039.png");
-  monsterAttack = loadImage("assets/Bringer-of-Death_Attack_5.png");
+  monsterAttack = loadImage("assets/Bringer-of-Death_Attack_5.png", img => img.resize(300, 0));
+  comboRulesImg = loadImage("assets/Combinations.png");
+  forestMap1 = loadImage("assets/forest1.png");
+  forestMap2 = loadImage("assets/forest2.png");
 
   for (let i = 1; i <= 6; i++) {
     diceFaces[i] = loadImage(`assets/d6_white_${i}.png`);
+  }
+
+  for (let j = 1; j <= 6; j++) {
+    enemyDice[j] = loadImage(`assets/d6_red_${j}.png`);
   }
 }
 
