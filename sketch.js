@@ -134,7 +134,7 @@ let diceTimer = 0;
 
 function preload() {
   warriorImg = loadImage("assets/Warrior 1 - Axe - Idle_088.png");
-  monsterImg = loadImage("assets/Bringer-of-Death_Attack_10.png", img => img.resize(400, 0));
+  monsterImg = loadImage("assets/Bringer-of-Death_Attack_10.png", img => img.resize(200, 0));
   hitImg = loadImage("assets/hit.png");
   warriorAttack = loadImage("assets/Warrior 1 - Axe - Attack 1_039.png");
   monsterAttack = loadImage("assets/Bringer-of-Death_Attack_5.png");
