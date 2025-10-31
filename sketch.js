@@ -100,7 +100,7 @@ function drawCharacters() {
   if (warriorImg) {
     push();
     imageMode(CENTER);
-    image(warriorImg, (width / 2) - 100, (height / 2) - 100);
+    image(warriorImg, (width / 2), (height / 2));
     pop();
   }
 
@@ -108,7 +108,7 @@ function drawCharacters() {
   if (monsterImg) {
     push();
     imageMode(CENTER);
-    image(monsterImg, (width / 2) + 100, (height / 2) - 100);
+    image(monsterImg, (width / 2), (height / 2));
     pop();
   }
 }
