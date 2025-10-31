@@ -59,10 +59,10 @@ function drawMenuScreen() {
   textSize(20);
   fill(220);
   text(
-    "• Roll 5 dice each turn to attack the monster.\n" +
-    "• You can lock dice and reroll up to 3 times.\n" +
-    "• Different Yahtzee combinations deal different damage.\n" +
-    "• Defeat the monster before your dice are disabled!",
+    "Roll 5 dices each turn to attack the monster.\n" +
+    "You can lock each dice and reroll up to 3 times.\n" +
+    "Different Yahtzee combinations deal different damage.\n" +
+    "Defeat the monster before your dices are all disabled!",
     width / 2,
     height / 2 - 30
   );
@@ -101,15 +101,15 @@ function drawCharacters() {
   // Draw Warrior
   if (warriorImg) {
     push();
-    imageMode(CORNER); // use top-left as anchor
+    imageMode(CENTER);
     image(warriorImg, (width / 2) - 100, (height / 2) - 400);
-    pop();
+    pop(CENTER);
   }
 
   // Draw Monster
   if (monsterImg) {
     push();
-    imageMode(CORNER);
+    imageMode(CENTER);
     image(monsterImg, (width / 2) + 100, (height / 2) - 350);
     pop();
   }
@@ -150,7 +150,7 @@ function setup() {
   createCanvas(800, 600);
   textAlign(CENTER, CENTER);
   textFont("Times New Roman");
-  monsterImg.resize(400, 0);
+  monsterImg.resize(800, 0);
 }
 
 function draw() {
