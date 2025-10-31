@@ -107,7 +107,6 @@ function drawCharacters() {
   // Draw Monster
   if (monsterImg) {
     push();
-    monsterImg.resize(800, 0);
     imageMode(CENTER);
     image(monsterImg, (width / 2) + 100, (height / 2) - 100);
     pop();
@@ -149,6 +148,9 @@ function setup() {
   createCanvas(800, 600);
   textAlign(CENTER, CENTER);
   textFont("Times New Roman");
+  if (monsterImg) {
+    monsterImg.resize(300, 0);
+  }
 }
 
 function draw() {
