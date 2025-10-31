@@ -89,9 +89,7 @@ function drawMenuScreen() {
   drawCharacters();
 }
 
-// =======================================================
-// GAMEPLACEHOLDER
-// =======================================================
+// Actual Game Play
 function drawGame() {
   background(40);
   fill(255);
@@ -99,27 +97,22 @@ function drawGame() {
   text("Gameplay Coming Soon...", width / 2, height / 2);
 }
 
-// =======================================================
-// CHARACTER DRAWING (Placeholder Shapes)
-// =======================================================
+// Drawings of Characters 
 function drawCharacters() {
   imageMode(CENTER);
 
   // Draw Warrior
   if (warriorImg) {
-    image(warriorImg, width / 2, height / 2);
+    image(warriorImg, (width / 2) - 200, (height / 2) + 200);
   } 
 
-  // Draw Monster
+  // Draw Monsters
   if (monsterImg) {
     image(monsterImg, width / 2, height / 2);
   }
 }
 
-
-// =======================================================
-// USER INPUT
-// =======================================================
+// Input
 function mousePressed() {
   if (gameState === "start") {
     gameState = "menu";
@@ -164,6 +157,6 @@ function draw() {
   } else if (gameState === "menu") {
     drawMenuScreen();
   } else if (gameState === "play") {
-    drawGame(); // Placeholder for future gameplay
+    drawGame(); // Future gameplay
   }
 }
