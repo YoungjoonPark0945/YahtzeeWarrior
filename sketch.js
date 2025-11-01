@@ -15,15 +15,28 @@ function drawStartScreen() {
     }
   }
 
+  // Warrior Walking Animation
   if (walkingWarrior.length > 0) {
     imageMode(CENTER);
     image(walkingWarrior[walkFrame], width / 3, 120, 80, 80);
-
     walkTimer++;
-    if (walkTimer % 8 === 0) { 
+    if (walkTimer % 8 === 0) {
       walkFrame++;
       if (walkFrame >= walkingWarrior.length) {
         walkFrame = 0;
+      }
+    }
+  }
+
+  // Monster Walking Animation
+  if (walkingMonster.length > 0) {
+    imageMode(CENTER);
+    image(walkingMonster[walkFrame2], width / 3  + 220, 63, 200, 200);
+    walkTimer2++;
+    if (walkTimer2 % 15 === 0) {
+      walkFrame2++;
+      if (walkFrame2 >= walkingMonster.length) {
+        walkFrame2 = 0;
       }
     }
   }
@@ -41,19 +54,19 @@ function drawStartScreen() {
   // Dice animation
   push();
   translate(width / 2, height / 2 + 60);
-  rotate(radians(diceAngle));
+  rotate(diceAngle);
   imageMode(CENTER);
-  image(diceFaces[diceAnimFrame], 0, 0, 100, 100);
+  image(diceFaces[diceFrame], 0, 0, 100, 100);
   pop();
 
-  diceAngle += 2;
+  diceAngle += 0.05;
 
   // switch face of dice
   diceTimer++;
-  if (diceTimer % 15 === 0) {
-    diceAnimFrame++;
-    if (diceAnimFrame > 6) {
-      diceAnimFrame = 1;
+  if (diceTimer % 40 === 0) {
+    diceFrame++;
+    if (diceFrame > 6) {
+      diceFrame = 1;
     }
   }
 
@@ -109,9 +122,9 @@ function drawMenuScreen() {
   // Dice animation 
   faceTimer++;
   if (faceTimer % 30 === 0) {
-    for (var i = 0; i < 5; i++){
+    for (var i = 0; i < 5; i++) {
       playerFaces[i] = floor(random(1, 7));
-    } 
+    }
     for (var i = 0; i < 2; i++) {
       enemyFaces[i] = floor(random(1, 7));
     }
@@ -147,10 +160,10 @@ function drawMenuScreen() {
   drawMonster1();
 
   // Image of Combinations
-  if (showRules && comboRulesImg) {
+  if (showRules && comboRules) {
     push();
     imageMode(CENTER);
-    image(comboRulesImg, width / 2, height / 2, 500, 500);
+    image(comboRules, width / 2, height / 2, 500, 500);
     pop();
   }
 }
@@ -234,13 +247,13 @@ let gameState = "start";
 let warriorImg, monsterImg, hitImg, warriorAttack, monsterAttack;
 var diceFaces = [];
 var diceAngle = 0;
-var diceAnimFrame = 1;
+var diceFrame = 1;
 var diceTimer = 0;
 var enemyDice = [];
 var playerFaces = [1, 2, 3, 4, 5];
 var enemyFaces = [1, 1];
 var faceTimer = 0;
-let comboRulesImg;
+let comboRules;
 let showRules = false;
 var attackTimer = 0;
 let warriorAttacking = false;
@@ -251,6 +264,9 @@ var scrollSpeed = 1
 var walkingWarrior = [];
 var walkFrame = 0;
 var walkTimer = 0;
+var walkingMonster = [];
+var walkFrame2 = 0;
+var walkTimer2 = 0;
 
 // Images
 function preload() {
@@ -259,7 +275,7 @@ function preload() {
   hitImg = loadImage("assets/hit.png");
   warriorAttack = loadImage("assets/Warrior 1 - Axe - Attack 1_039.png");
   monsterAttack = loadImage("assets/Bringer-of-Death_Attack_5.png", img => img.resize(300, 0));
-  comboRulesImg = loadImage("assets/Combinations.png");
+  comboRules = loadImage("assets/Combinations.png");
   forestMap1 = loadImage("assets/forest1.png");
   forestMap2 = loadImage("assets/forest2.png");
 
@@ -272,12 +288,16 @@ function preload() {
   for (var k = 0; k <= 7; k++) {
     walkingWarrior[k] = loadImage("assets/Warrior 1 - Axe - Walk_00" + k + ".png");
   }
+  for (var l = 1; l <= 8; l++) {
+    walkingMonster[l - 1] = loadImage("assets/Bringer-of-Death_Walk_" + l + ".png", img => img.resize(300, 0));
+  }
 }
 
 function setup() {
   createCanvas(800, 600);
   textAlign(CENTER, CENTER);
   textFont("Times New Roman");
+  angleMode(RADIANS);
 }
 
 function draw() {
