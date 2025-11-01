@@ -31,7 +31,7 @@ function drawStartScreen() {
   // Monster Walking Animation
   if (walkingMonster.length > 0) {
     imageMode(CENTER);
-    image(walkingMonster[walkFrame2], width / 3  + 220, 63, 200, 200);
+    image(walkingMonster[walkFrame2], width / 3 + 220, 63, 200, 200);
     walkTimer2++;
     if (walkTimer2 % 15 === 0) {
       walkFrame2++;
@@ -99,10 +99,10 @@ function drawMenuScreen() {
   fill(220);
   text(
     "Roll 5 dices each turn to attack the monster.\n" +
-    "You can lock each dice and reroll up to 3 times.\n" +
-    "Different Yahtzee combinations deal different damage.\n" +
-    "Defeat the monster before your dices are all disabled!\n" +
-    "Click the Button to see the example combinations",
+      "You can lock each dice and reroll up to 3 times.\n" +
+      "Different Yahtzee combinations deal different damage.\n" +
+      "Defeat the monster before your dices are all disabled!\n" +
+      "Click the Button to see the example combinations",
     width / 2,
     height / 2 - 80
   );
@@ -119,30 +119,30 @@ function drawMenuScreen() {
   textSize(22);
   text("Combination Rules", buttonX, buttonY);
 
-  // Dice animation 
+  // Dice animation
   faceTimer++;
   if (faceTimer % 30 === 0) {
     for (var i = 0; i < 5; i++) {
       playerFaces[i] = floor(random(1, 7));
     }
-    for (var i = 0; i < 2; i++) {
-      enemyFaces[i] = floor(random(1, 7));
+    for (var k = 0; k < 2; k++) {
+      enemyFaces[k] = floor(random(1, 7));
     }
   }
 
   // Player's 5 dices
   var diceY = height - 90;
-  var diceX = (width / 2) - 340;
+  var diceX = width / 2 - 340;
 
   imageMode(CENTER);
-  for (var i = 0; i < 5; i++) {
-    image(diceFaces[playerFaces[i]], diceX + i * 80, diceY, 60, 60);
+  for (var j = 0; j < 5; j++) {
+    image(diceFaces[playerFaces[j]], diceX + j * 80, diceY, 60, 60);
   }
 
   // Enemy dices
   if (monsterImg) {
-    var monsterX = (width / 2) + 250;
-    var monsterY = (height / 2) + 40;
+    var monsterX = width / 2 + 250;
+    var monsterY = height / 2 + 40;
 
     image(enemyDice[enemyFaces[1]], monsterX - 50, monsterY + 160, 80, 80);
     image(enemyDice[enemyFaces[0]], monsterX + 50, monsterY + 160, 80, 80);
@@ -152,7 +152,7 @@ function drawMenuScreen() {
   fill(180, 220, 255);
   textSize(24);
   if (frameCount % 100 < 50) {
-    text("Click to Begin Battle", (width / 2), (height / 2) + 120);
+    text("Click to Begin Battle", width / 2, height / 2 + 120);
   }
 
   // Draw Characters
@@ -182,9 +182,9 @@ function drawWarrior() {
   push();
   imageMode(CENTER);
   if (warriorAttacking && warriorAttack) {
-    image(warriorAttack, (width / 2) - 200, (height / 2) + 100);
+    image(warriorAttack, width / 2 - 200, height / 2 + 100);
   } else if (warriorImg) {
-    image(warriorImg, (width / 2) - 200, (height / 2) + 100);
+    image(warriorImg, width / 2 - 200, height / 2 + 100);
   }
   pop();
 }
@@ -195,9 +195,9 @@ function drawMonster1() {
   push();
   imageMode(CENTER);
   if (monsterAttacking && monsterAttack) {
-    image(monsterAttack, (width / 2) + 180, (height / 2) + 40);
+    image(monsterAttack, width / 2 + 180, height / 2 + 40);
   } else if (monsterImg) {
-    image(monsterImg, (width / 2) + 180, (height / 2) + 40);
+    image(monsterImg, width / 2 + 180, height / 2 + 40);
   }
   pop();
 }
@@ -210,30 +210,30 @@ function mousePressed() {
     } else if (gameState === "menu") {
       // Check if user clicked inside button
       if (
-        mouseX > ((width / 2) - 140) &&
-        mouseX < ((width / 2) + 140) &&
-        mouseY > (height / 2 + 20 - 25) &&
-        mouseY < (height / 2 + 20 + 25)
+        mouseX > width / 2 - 140 &&
+        mouseX < width / 2 + 140 &&
+        mouseY > height / 2 + 20 - 25 &&
+        mouseY < height / 2 + 20 + 25
       ) {
         showRules = !showRules;
         return;
       }
       if (showRules) {
         if (
-          mouseX > (width / 2 - 250) &&
-          mouseX < (width / 2 + 250) &&
-          mouseY > (height / 2 - 250) &&
-          mouseY < (height / 2 + 250)
+          mouseX > width / 2 - 250 &&
+          mouseX < width / 2 + 250 &&
+          mouseY > height / 2 - 250 &&
+          mouseY < height / 2 + 250
         ) {
           showRules = false;
           return;
         }
       }
       if (
-        mouseX > ((width / 2) - 140) &&
-        mouseX < ((width / 2) + 140) &&
-        mouseY > (height / 2 + 120 - 25) &&
-        mouseY < (height / 2 + 120 + 25)
+        mouseX > width / 2 - 140 &&
+        mouseX < width / 2 + 140 &&
+        mouseY > height / 2 + 120 - 25 &&
+        mouseY < height / 2 + 120 + 25
       ) {
         gameState = "play";
         return;
@@ -260,7 +260,7 @@ let warriorAttacking = false;
 let monsterAttacking = false;
 let forestMap2;
 var scroll = 0;
-var scrollSpeed = 1
+var scrollSpeed = 1;
 var walkingWarrior = [];
 var walkFrame = 0;
 var walkTimer = 0;
@@ -271,10 +271,14 @@ var walkTimer2 = 0;
 // Images
 function preload() {
   warriorImg = loadImage("assets/Warrior 1 - Axe - Idle_088.png");
-  monsterImg = loadImage("assets/Bringer-of-Death_Attack_10.png", img => img.resize(300, 0));
+  monsterImg = loadImage("assets/Bringer-of-Death_Attack_10.png", (img) =>
+    img.resize(300, 0)
+  );
   hitImg = loadImage("assets/hit.png");
   warriorAttack = loadImage("assets/Warrior 1 - Axe - Attack 1_039.png");
-  monsterAttack = loadImage("assets/Bringer-of-Death_Attack_5.png", img => img.resize(300, 0));
+  monsterAttack = loadImage("assets/Bringer-of-Death_Attack_5.png", (img) =>
+    img.resize(300, 0)
+  );
   comboRules = loadImage("assets/Combinations.png");
   forestMap1 = loadImage("assets/forest1.png");
   forestMap2 = loadImage("assets/forest2.png");
@@ -286,10 +290,15 @@ function preload() {
     enemyDice[j] = loadImage("assets/d6_red_" + j + ".png");
   }
   for (var k = 0; k <= 7; k++) {
-    walkingWarrior[k] = loadImage("assets/Warrior 1 - Axe - Walk_00" + k + ".png");
+    walkingWarrior[k] = loadImage(
+      "assets/Warrior 1 - Axe - Walk_00" + k + ".png"
+    );
   }
   for (var l = 1; l <= 8; l++) {
-    walkingMonster[l - 1] = loadImage("assets/Bringer-of-Death_Walk_" + l + ".png", img => img.resize(300, 0));
+    walkingMonster[l - 1] = loadImage(
+      "assets/Bringer-of-Death_Walk_" + l + ".png",
+      (img) => img.resize(300, 0)
+    );
   }
 }
 
