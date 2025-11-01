@@ -15,6 +15,19 @@ function drawStartScreen() {
     }
   }
 
+  if (walkingWarrior.length > 0) {
+    imageMode(CENTER);
+    image(walkingWarrior[walkFrame], width / 3, 120, 80, 80);
+
+    walkTimer++;
+    if (walkTimer % 8 === 0) { 
+      walkFrame++;
+      if (walkFrame >= walkingWarrior.length) {
+        walkFrame = 0;
+      }
+    }
+  }
+
   // Title
   fill(255);
   textSize(48);
@@ -37,7 +50,7 @@ function drawStartScreen() {
 
   // switch face of dice
   diceTimer++;
-  if (diceTimer % 15 === 0) { 
+  if (diceTimer % 15 === 0) {
     diceAnimFrame++;
     if (diceAnimFrame > 6) {
       diceAnimFrame = 1;
@@ -76,51 +89,50 @@ function drawMenuScreen() {
     "You can lock each dice and reroll up to 3 times.\n" +
     "Different Yahtzee combinations deal different damage.\n" +
     "Defeat the monster before your dices are all disabled!\n" +
-    "Click the Button to see the combinations",
+    "Click the Button to see the example combinations",
     width / 2,
     height / 2 - 80
   );
 
   // Button to see Combinations
-  let btnX = width / 2;
-  let btnY = height / 2 + 20;
-  let btnW = 280;
-  let btnH = 50;
+  var buttonX = width / 2;
+  var buttonY = height / 2 + 20;
 
   fill(50, 100, 200);
   rectMode(CENTER);
-  rect(btnX, btnY, btnW, btnH, 10);
+  rect(buttonX, buttonY, 280, 50, 10);
 
   fill(255);
   textSize(22);
-  text("Combination Rules", btnX, btnY);
+  text("Combination Rules", buttonX, buttonY);
 
   // Dice animation 
   faceTimer++;
   if (faceTimer % 30 === 0) {
-    for (let i = 0; i < 5; i++) playerFaces[i] = floor(random(1, 7));
-    for (let i = 0; i < 2; i++) enemyFaces[i] = floor(random(1, 7));
+    for (var i = 0; i < 5; i++){
+      playerFaces[i] = floor(random(1, 7));
+    } 
+    for (var i = 0; i < 2; i++) {
+      enemyFaces[i] = floor(random(1, 7));
+    }
   }
 
   // Player's 5 dices
-  let diceY = height - 90;
-  let diceXStart = (width / 2) - 340;
-  let diceSpacing = 80;
+  var diceY = height - 90;
+  var diceX = (width / 2) - 340;
 
   imageMode(CENTER);
-  for (let i = 0; i < 5; i++) {
-    image(diceFaces[playerFaces[i]], diceXStart + i * diceSpacing, diceY, 60, 60);
+  for (var i = 0; i < 5; i++) {
+    image(diceFaces[playerFaces[i]], diceX + i * 80, diceY, 60, 60);
   }
 
   // Enemy dices
   if (monsterImg) {
-    let monsterX = (width / 2) + 250;
-    let monsterY = (height / 2) + 40;
-    let offsetY = 160;
-    let offsetX = 50;
+    var monsterX = (width / 2) + 250;
+    var monsterY = (height / 2) + 40;
 
-    image(enemyDice[enemyFaces[0]], monsterX - offsetX, monsterY + offsetY, 80, 80);
-    image(enemyDice[enemyFaces[1]], monsterX + offsetX, monsterY + offsetY, 80, 80);
+    image(enemyDice[enemyFaces[1]], monsterX - 50, monsterY + 160, 80, 80);
+    image(enemyDice[enemyFaces[0]], monsterX + 50, monsterY + 160, 80, 80);
   }
 
   // Start battle button
@@ -148,7 +160,7 @@ function drawGame() {
   background(40);
   fill(255);
   textSize(32);
-  text("Wiat For Next CheckPoint To See GamePlay", width / 2, height / 2);
+  text("Wait For Next CheckPoint To See GamePlay", width / 2, height / 2);
 }
 
 // Function to draw warrior character
@@ -220,22 +232,25 @@ function mousePressed() {
 // Global variables
 let gameState = "start";
 let warriorImg, monsterImg, hitImg, warriorAttack, monsterAttack;
-let diceFaces = [];
-let diceAngle = 0;
-let diceAnimFrame = 1;
-let diceTimer = 0;
-let enemyDice = [];
-let playerFaces = [1, 2, 3, 4, 5];
-let enemyFaces = [1, 1];
-let faceTimer = 0;
+var diceFaces = [];
+var diceAngle = 0;
+var diceAnimFrame = 1;
+var diceTimer = 0;
+var enemyDice = [];
+var playerFaces = [1, 2, 3, 4, 5];
+var enemyFaces = [1, 1];
+var faceTimer = 0;
 let comboRulesImg;
 let showRules = false;
-let attackTimer = 0;
+var attackTimer = 0;
 let warriorAttacking = false;
 let monsterAttacking = false;
 let forestMap2;
-let scroll = 0;
-let scrollSpeed = 1
+var scroll = 0;
+var scrollSpeed = 1
+var walkingWarrior = [];
+var walkFrame = 0;
+var walkTimer = 0;
 
 // Images
 function preload() {
@@ -248,11 +263,14 @@ function preload() {
   forestMap1 = loadImage("assets/forest1.png");
   forestMap2 = loadImage("assets/forest2.png");
 
-  for (let i = 1; i <= 6; i++) {
-    diceFaces[i] = loadImage(`assets/d6_white_${i}.png`);
+  for (var i = 1; i <= 6; i++) {
+    diceFaces[i] = loadImage("assets/d6_white_" + i + ".png");
   }
-  for (let j = 1; j <= 6; j++) {
-    enemyDice[j] = loadImage(`assets/d6_red_${j}.png`);
+  for (var j = 1; j <= 6; j++) {
+    enemyDice[j] = loadImage("assets/d6_red_" + j + ".png");
+  }
+  for (var k = 0; k <= 7; k++) {
+    walkingWarrior[k] = loadImage("assets/Warrior 1 - Axe - Walk_00" + k + ".png");
   }
 }
 
@@ -270,6 +288,6 @@ function draw() {
   } else if (gameState === "menu") {
     drawMenuScreen();
   } else if (gameState === "play") {
-    drawGame(); 
+    drawGame();
   }
 }
