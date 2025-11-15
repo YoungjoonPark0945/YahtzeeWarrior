@@ -1,4 +1,4 @@
-// Yahtzee Warrior - Checkpoint 1
+// Yahtzee Warrior - Checkpoint 2
 // Creator: Youngjoon Park
 
 // START SCREEN
