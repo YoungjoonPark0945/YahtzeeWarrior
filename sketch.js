@@ -233,7 +233,7 @@ function drawGame() {
         if (d1 <= 3) {
           monsterAttackType = "normal";
           monsterAttacking = true;
-        } 
+        }
         else {
           monsterAttackType = "magic";
           monsterCasting = true;
@@ -655,10 +655,7 @@ function mousePressed() {
     }
     else if (gameState === "gameOver") {
       // Reset everything
-      playerHP = 100;
-      monsterHP = 150;
-      monsterDead = false;
-      warriorDead = false;
+      resetGame();
       turnState = "playerRoll";
       rollCount = 0;
 
@@ -668,17 +665,10 @@ function mousePressed() {
 
     else if (gameState === "nextGame") {
       // Restart for next monster
-      playerHP = 100;
-      monsterHP = 150;
-      monsterDead = false;
-      warriorDead = false;
-      turnState = "playerRoll";
-      rollCount = 0;
-
+      resetGame();
       gameState = "start";
       return;
     }
-
   }
 }
 
@@ -722,6 +712,54 @@ function autoRefreshDice() {
     playerLocked[j] = false;
   }
   rollCount = 1;
+}
+
+function resetGame() {
+  // HP
+  playerHP = 100;
+  monsterHP = 150;
+
+  // Dice
+  for (let i = 0; i < 5; i++) {
+    playerFaces[i] = floor(random(1, 7));
+    playerLocked[i] = false;
+  }
+  enemyFaces = [1, 1];
+  rollCount = 0;
+  isRolling = false;
+  rollTimer = 0;
+
+  // Warrior state
+  warriorDead = false;
+  warriorBlink = 0;
+  warriorAttacking = false;
+  warriorFrame = 0;
+  warriorFrameTimer = 0;
+  warriorFade = 255;
+
+  // Monster state
+  monsterDead = false;
+  monsterBlink = 0;
+  monsterRolling = false;
+  monsterRollTimer = 0;
+  monsterAttackType = "";
+  monsterAttacking = false;
+  monsterCasting = false;
+  monsterPendingDamage = 0;
+  monsterFrame = 0;
+  monsterFrameTimer = 0;
+  monsterFrameIdle = 0;
+  monsterFrameIdleTimer = 0;
+
+  // Game logic state
+  turnState = "playerRoll";
+  transitionTimer = 0;
+
+  // Start screen animations reset
+  walkFrame = 0;
+  walkTimer = 0;
+  walkFrame2 = 0;
+  walkTimer2 = 0;
 }
 
 // Global Variables
