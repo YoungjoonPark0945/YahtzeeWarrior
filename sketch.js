@@ -380,12 +380,12 @@ function drawMonster1() {
       monsterFrameIdle++;
     }
 
-    // After last frame, move to nextGame
+    // After last frame, move to reward screnn
     if (monsterFrameIdle >= monsterDeathFrames.length) {
       transitionTimer++;
 
       if (transitionTimer > 60) {
-        gameState = "nextGame";
+        gameState = "reward";
         transitionTimer = 0;
       }
     }
@@ -437,7 +437,7 @@ function drawMonster1() {
       monsterFrameTimer = 0;
       monsterCasting = false;
 
-      // apply magic damage after cast completes
+      // Apply magic damage after cast completes
       playerHP -= monsterPendingDamage;
       if (playerHP < 0) {
         playerHP = 0;
@@ -464,6 +464,79 @@ function drawMonster1() {
       }
     }
   }
+  pop();
+}
+
+function drawBoss() {
+  push();
+  imageMode(CENTER);
+
+  // Boss hit animation
+  if (bossHit) {
+    image(bossHitFrames[bossFrame], width / 2 + 180, height / 2 - 20);
+
+    if (frameCount % 5 === 0) {
+      bossFrame++;
+    }
+
+    if (bossFrame >= bossHitFrames.length) {
+      bossHit = false;
+      bossFrame = 0;  // return to idle
+    }
+
+    pop();
+    return;
+  }
+
+  // Boss death animation
+  if (bossDead) {
+    if (bossFrame < bossDeathFrames.length) {
+      image(bossDeathFrames[bossFrame], width / 2 + 180, height / 2 - 20);
+
+      if (frameCount % 6 === 0) bossFrame++;
+    } else {
+      // after animation → go to game win
+      gameState = "gameWin";
+    }
+
+    pop();
+    return;
+  }
+
+  // Boss Attack Animation
+  if (monsterAttacking) {
+    image(bossAttackFrames[bossFrame], width / 2 + 180, height / 2 - 20);
+
+    bossFrameTimer++;
+    if (bossFrameTimer % 5 === 0) bossFrame++;
+
+    // end of attack animation
+    if (bossFrame >= bossAttackFrames.length) {
+      bossFrame = 0;
+      bossFrameTimer = 0;
+      monsterAttacking = false;
+
+      // apply pending damage
+      playerHP -= monsterPendingDamage;
+      if (playerHP < 0) playerHP = 0;
+      warriorBlink = 12;
+
+      // check if player died
+      if (playerHP <= 0) warriorDead = true;
+    }
+
+    pop();
+    return;
+  }
+
+  // Boss Idle Animation
+  image(bossIdleFrames[bossFrame], width / 2 + 180, height / 2 - 20);
+
+  if (frameCount % 8 === 0) {
+    bossFrame++;
+    if (bossFrame >= bossIdleFrames.length) bossFrame = 0;
+  }
+
   pop();
 }
 
@@ -555,17 +628,202 @@ function drawGameOverScreen() {
   text("Click anywhere to restart", width / 2, height / 2 + 40);
 }
 
-// Function to display next game map
-function drawNextGameScreen() {
-  background(0, 80, 0);
-  fill(120, 255, 120);
-  textSize(60);
-  text("VICTORY!", width / 2, height / 2 - 120);
+function drawRewardScreen() {
+  background(20, 20, 40);
 
+  textSize(40);
   fill(255);
+  text("Reward Chest!", width / 2, 80);
+
+  imageMode(CENTER);
+
+  // chest animation
+  if (!chestOpened) {
+    image(chestIdle, width / 2, height / 2 + 50, 140, 140);
+    textSize(24);
+    fill(180, 220, 255);
+    text("Click to open chest", width / 2, height - 100);
+  }
+  else {
+    var frameImg = chestOpenFrames[chestFrame];
+    image(frameImg, width / 2, height / 2 + 50, 140, 140);
+
+    if (frameCount % 4 === 0 && chestFrame < chestOpenFrames.length - 1) {
+      chestFrame++;
+    }
+
+    // reveal item
+    if (chestFrame === chestOpenFrames.length - 1) {
+      if (rewardItem === "sword") {
+        image(itemSword, width / 2, height / 2 - 50, 100, 100);
+      }
+      else {
+        image(itemShield, width / 2, height / 2 - 50, 100, 100);
+      }
+
+      textSize(28);
+      text("Click to continue", width / 2, height - 100);
+    }
+  }
+}
+
+function drawBossBattle() {
+  if (forestMap2) {
+    imageMode(CORNER);
+    image(forestMap2, scroll, 0, width, height);
+    image(forestMap2, scroll + width, 0, width, height);
+    scroll -= scrollSpeed * 0.5;
+    if (scroll <= -width) scroll = 0;
+  }
+
+  // Draw Characters
+  drawWarrior();
+  drawBoss();
+
+  // Player roll
+  if (turnState === "playerRoll" && isRolling) {
+    rollTimer++;
+    if (frameCount % 4 === 0) {
+      for (var j = 0; j < 5; j++) {
+        if (!playerLocked[j]) {
+          playerFaces[j] = floor(random(1, 7));
+        }
+      }
+    }
+    if (rollTimer > 80) {
+      isRolling = false;
+      rollTimer = 0;
+      rollCount++;
+    }
+  }
+
+  // Player attack
+  if (turnState === "playerAttack") {
+    if (!warriorAttacking) {
+      // Player damage
+      let dmg = calculatePlayerDamage();
+      dmg = dmg * playerDamageMultiplier;   // sword buff
+
+      if (playerTemporaryNerf) {
+        dmg *= 0.8;   // boss pair debuff
+        playerTemporaryNerf = false;
+      }
+
+      // Apply damage to boss
+      bossHP -= dmg;
+      bossHit = true;
+      bossFrame = 0;
+      bossFrameTimer = 0;
+
+      if (bossHP < 0) {
+        bossHP = 0;
+      }
+      if (bossHP <= 0) {
+        bossDead = true;
+      }
+
+      monsterRolling = true;
+      turnState = "enemyAttack";
+    }
+  }
+
+  // Enemy Attack
+  if (turnState === "enemyAttack") {
+
+    // Rplling animation
+    if (monsterRolling) {
+      monsterRollTimer++;
+      if (frameCount % 4 === 0) {
+        enemyFaces[0] = floor(random(1, 7));
+        enemyFaces[1] = floor(random(1, 7));
+      }
+
+      if (monsterRollTimer > 90) {
+        monsterRolling = false;
+        monsterRollTimer = 0;
+
+        let d1 = enemyFaces[0];
+        let d2 = enemyFaces[1];
+
+        // Boss damage logic
+        let dmg = d1 * d2 * bossDamageMultiplier; // ×1.2
+
+        // Nerf attack
+        if (d1 === d2) {
+          dmg = max(dmg, 8);       // min damage 8
+          playerTemporaryNerf = true;  // nerf next player attack
+        }
+
+        // Shield damage reduction
+        dmg = dmg * incomingDamageMultiplier;
+
+        bossAttackType = "normal";
+        monsterAttacking = true;
+
+        monsterPendingDamage = dmg;
+      }
+    }
+    if (!monsterRolling && !monsterAttacking && !bossDead) {
+      autoRefreshDice();
+      turnState = "playerRoll";
+    }
+  }
+
+  // Player Dice
+  var diceY = height - 100;
+  var diceX = width / 2 - 340;
+  imageMode(CENTER);
+  for (var i = 0; i < 5; i++) {
+    if (playerLocked[i]) {
+      tint(150, 150);
+    } else {
+      noTint();
+    }
+    image(diceFaces[playerFaces[i]], diceX + i * 100, diceY, 80, 80);
+  }
+  noTint();
+
+  // Enemy Dice
+  var bossX = width / 2 + 250;
+  var bossY = height / 2 + 40;
+  image(enemyDice[enemyFaces[0]], bossX - 60, bossY + 160, 80, 80);
+  image(enemyDice[enemyFaces[1]], bossX + 60, bossY + 160, 80, 80);
+
+  // Buttons
+  drawButtons();
+  // Rolls left
+  fill(255);
+  textSize(18);
+  text("Rolls left: " + (3 - rollCount), width / 2, height - 160);
+
+  // Hp bars
+  drawHealthBar(60, 40, width / 2 - 60, 30, playerHP, 100, color(0, 200, 0));
+  drawHealthBar(width / 2, 40, 340, 30, bossHP, 200, color(200, 0, 0));
+}
+
+function drawGameWinScreen() {
+  background(0);
+
+  // Fade In
+  if (winFade < 255) winFade += 4;
+  tint(255, winFade);
+
+  // Victory Title
+  noStroke();
+  fill(255, 220, 80);
+  textSize(70);
+  text("YOU WIN!", width / 2, height / 2 - 120);
+  fill(220);
+  textSize(30);
+  text("You defeated the Demon King!", width / 2, height / 2 - 50);
+
+  // Glow Effect
+  let glow = sin(frameCount * 0.08) * 40 + 80;
+  fill(255, 255, 255, glow);
   textSize(24);
-  text("You have defeated the monster!", width / 2, height / 2 - 40);
-  text("Expect Next Checkpoint Please", width / 2, height / 2 + 40);
+  text("Click anywhere to restart", width / 2, height / 2 + 100);
+
+  noTint();
 }
 
 // Function to check if mouse is clicked correctly
@@ -653,6 +911,56 @@ function mousePressed() {
         return;
       }
     }
+    else if (gameState === "bossBattle") {
+      // Dice lock
+      var diceY = height - 100;
+      var diceX = width / 2 - 340;
+
+      for (var i = 0; i < 5; i++) {
+        var x = diceX + i * 100;
+        var y = diceY;
+        if (dist(mouseX, mouseY, x, y) < 40) {
+          playerLocked[i] = !playerLocked[i];
+          return;
+        }
+      }
+
+      // Roll
+      let rollBtnX = width / 2 - 200;
+      let rollBtnY = height / 2 - 40;
+
+      if (
+        mouseX > rollBtnX - 90 &&
+        mouseX < rollBtnX + 90 &&
+        mouseY > rollBtnY - 20 &&
+        mouseY < rollBtnY + 20
+      ) {
+        if (turnState === "playerRoll" && !isRolling && rollCount < 3) {
+          isRolling = true;
+          rollTimer = 0;
+        }
+        return;
+      }
+
+      // Attack 
+      let attackBtnX = width / 2 - 200;
+      let attackBtnY = height / 2 - 100;
+
+      if (
+        mouseX > attackBtnX - 90 &&
+        mouseX < attackBtnX + 90 &&
+        mouseY > attackBtnY - 20 &&
+        mouseY < attackBtnY + 20
+      ) {
+        if (turnState === "playerRoll" && !isRolling && rollCount > 0) {
+          turnState = "playerAttack";
+          warriorAttacking = true;
+          warriorFrame = 0;
+          warriorFrameTimer = 0;
+        }
+        return;
+      }
+    }
     else if (gameState === "gameOver") {
       // Reset everything
       resetGame();
@@ -662,8 +970,35 @@ function mousePressed() {
       gameState = "start";
       return;
     }
+    else if (gameState === "reward") {
+      if (!chestOpened) {
+        chestOpened = true;
+        rewardItem = random(["sword", "shield"]);
 
-    else if (gameState === "nextGame") {
+        if (rewardItem === "sword") {
+          playerDamageMultiplier = 1.2;
+        }
+        else {
+          incomingDamageMultiplier = 0.8;
+        }
+      }
+      else {
+        // Move to boss stage
+        chestOpened = false;
+        chestFrame = 0;
+
+        // Heal 50%
+        playerHP = min(100, playerHP + 50);
+
+        // Prepare boss
+        bossHP = 200;
+        bossDead = false;
+        resetStage();
+        turnState = "playerRoll";
+        gameState = "bossBattle";
+      }
+    }
+    else if (gameState === "gameWin") {
       // Restart for next monster
       resetGame();
       gameState = "start";
@@ -718,6 +1053,7 @@ function resetGame() {
   // HP
   playerHP = 100;
   monsterHP = 150;
+  bossHP = 200;
 
   // Dice
   for (let i = 0; i < 5; i++) {
@@ -729,15 +1065,18 @@ function resetGame() {
   isRolling = false;
   rollTimer = 0;
 
-  // Warrior state
+  // Player
   warriorDead = false;
   warriorBlink = 0;
   warriorAttacking = false;
   warriorFrame = 0;
   warriorFrameTimer = 0;
   warriorFade = 255;
+  playerDamageMultiplier = 1.0;
+  incomingDamageMultiplier = 1.0;
+  playerTemporaryNerf = false;
 
-  // Monster state
+  // Monster
   monsterDead = false;
   monsterBlink = 0;
   monsterRolling = false;
@@ -751,16 +1090,65 @@ function resetGame() {
   monsterFrameIdle = 0;
   monsterFrameIdleTimer = 0;
 
-  // Game logic state
+  // Boss
+  bossDead = false;
+  bossFrame = 0;
+  bossFrameTimer = 0;
+  bossHit = false;
+
+  // Reward
+  chestOpened = false;
+  chestFrame = 0;
+  rewardItem = "";
+  winFade = 0;
+
+  // Game flow
   turnState = "playerRoll";
   transitionTimer = 0;
 
-  // Start screen animations reset
+  // Start screen animation
   walkFrame = 0;
   walkTimer = 0;
   walkFrame2 = 0;
   walkTimer2 = 0;
 }
+
+function resetStage() {
+  // Reset dice for player
+  for (let i = 0; i < 5; i++) {
+    playerFaces[i] = floor(random(1, 7));
+    playerLocked[i] = false;
+  }
+  enemyFaces = [1, 1];
+  rollCount = 0;
+  isRolling = false;
+  rollTimer = 0;
+
+  // Player state
+  warriorAttacking = false;
+  warriorBlink = 0;
+  warriorFrame = 0;
+  warriorFrameTimer = 0;
+
+  monsterRolling = false;
+  monsterAttacking = false;
+  monsterCasting = false;
+  monsterPendingDamage = 0;
+  monsterFrame = 0;
+  monsterFrameTimer = 0;
+  monsterFrameIdle = 0;
+  monsterFrameIdleTimer = 0;
+
+  // Boss state fresh
+  bossDead = false;
+  bossHit = false;
+  bossFrame = 0;
+  bossFrameTimer = 0;
+
+  // Combat state
+  turnState = "playerRoll";
+}
+
 
 // Global Variables
 // Game State
@@ -825,12 +1213,38 @@ var monsterAttacking = false;
 var monsterCasting = false;
 var monsterPendingDamage = 0;
 
+// Temporary Variables
 var faceTimer = 0;
 var diceAngle = 0;
 var diceFrame = 1;
 var diceTimer = 0;
 let warriorAttack, monsterAttack;
+var winFade = 0;
 
+// Reward & Boss System
+let chestIdle;
+var chestOpenFrames = [];
+var chestFrame = 0;
+var chestOpened = false;
+var rewardItem = "";  // "sword" or "shield"
+let itemSword, itemShield;
+
+// Boss assets
+var bossIdleFrames = [];
+var bossAttackFrames = [];
+var bossHitFrames = [];
+var bossDeathFrames = [];
+var bossHP = 200;
+var bossDead = false;
+var bossFrame = 0;
+var bossFrameTimer = 0;
+var bossHit = false;
+
+// Modifiers
+var playerDamageMultiplier = 1.0;
+var incomingDamageMultiplier = 1.0;
+var bossDamageMultiplier = 1.2;
+var playerTemporaryNerf = false;
 
 // Images
 function preload() {
@@ -887,6 +1301,30 @@ function preload() {
   for (var i = 1; i <= 8; i++) {
     walkingMonster[i - 1] = loadImage("assets/Bringer-of-Death_Walk_" + i + ".png");
   }
+
+  // Chest
+  chestIdle = loadImage("assets/IdleChest.png");
+  for (var i = 1; i <= 16; i++) {
+    chestOpenFrames.push(loadImage("assets/ChestGold/Open(GoldLoot)" + i + ".png"));
+  }
+
+  // Reward items
+  itemSword = loadImage("assets/IronSword.png");
+  itemShield = loadImage("assets/IronShield.png");
+
+  // Boss images
+  for (var i = 1; i <= 6; i++) {
+    bossIdleFrames.push(loadImage("assets/01_demon_idle/demon_idle_" + i + ".png"));
+  }
+  for (var i = 1; i <= 15; i++) {
+    bossAttackFrames.push(loadImage("assets/03_demon_cleave/demon_cleave_" + i + ".png"));
+  }
+  for (var i = 1; i <= 5; i++) {
+    bossHitFrames.push(loadImage("assets/04_demon_take_hit/demon_take_hit_" + i + ".png"));
+  }
+  for (var i = 1; i <= 22; i++) {
+    bossDeathFrames.push(loadImage("assets/05_demon_death/demon_death_" + i + ".png"));
+  }
 }
 
 function setup() {
@@ -910,6 +1348,22 @@ function setup() {
       }
     }
   }
+
+  // Resize reward
+  chestIdle.resize(140, 0);
+  itemSword.resize(100, 0);
+  itemShield.resize(100, 0);
+  for (let img of chestOpenFrames) {
+    if (img) img.resize(140, 0);
+  }
+
+  // Resize Boss
+  const bossGroups = [bossIdleFrames, bossAttackFrames, bossHitFrames, bossDeathFrames];
+  for (let group of bossGroups) {
+    for (let img of group) {
+      if (img) img.resize(600, 0);
+    }
+  }
 }
 
 function draw() {
@@ -924,10 +1378,16 @@ function draw() {
   else if (gameState === "play") {
     drawGame();
   }
+  else if (gameState === "reward") {
+    drawRewardScreen();
+  }
+  else if (gameState === "bossBattle") {
+    drawBossBattle();
+  }
   else if (gameState === "gameOver") {
     drawGameOverScreen();
   }
-  else if (gameState === "nextGame") {
-    drawNextGameScreen();
+  else if (gameState === "gameWin") {
+    drawGameWinScreen();
   }
 }
